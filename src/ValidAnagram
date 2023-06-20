@@ -1,0 +1,22 @@
+use std::collections::HashMap;
+
+impl Solution {
+    pub fn is_anagram(s: String, t: String) -> bool {
+        let mut map = HashMap::new();
+        s.chars().for_each(|c| *map.entry(c).or_insert(0) += 1);
+        // we use run a for_each on all the chars and we remember
+        // that entry returns an
+        // Entry type (which have Occupied and Vacant Enum response)
+        // and that .or_insert takes the Entry value and put the value
+        // inside(this case 0) else it returns the Occupied value
+        // there we use * to be able to mutate it and we do +=1 to it.
+        t.chars().for_each(|c| *map.entry(c).or_insert(0) -= 1);
+        // we do the same but reduce so if the char ends up being zero we 
+        // its mean its ok if its less or more than zero its not ok
+        map.into_values().all(|v| v == 0)
+        // if all of the values in the map are 0 it is an anagram
+    }
+    // the trick here is to only create one map and fold it on itself
+    // counting up then down.
+    // Omega(1),O(n) runtime and Omega(1),O(n) space complexity
+}
