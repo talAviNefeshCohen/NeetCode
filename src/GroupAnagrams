@@ -1,0 +1,38 @@
+use std::collections::HashMap;
+pub fn sort_string(s: &String) -> String {
+    // convert to vector of chars(copy)
+    let mut chars: Vec<char> = s.chars().collect();
+    // sorts the vector
+    chars.sort();
+    // convert back to String
+    let sorted_string: String = chars.into_iter().collect();
+    sorted_string
+}
+impl Solution {
+
+    pub fn group_anagrams(strs: Vec<String>) -> Vec<Vec<String>> {
+
+        // this is presolution thogghts.
+        // one solution use sorting(either count or not count) on the words chars in order
+        // to create a unique key to map between a string and a vec. if a sorted string is 
+        // the same as another string they are anagrams of eachother and there is only a need to check in an hashmap
+        // if this string exists. if so just add it as a value to the vector, if not insert a new entry,
+        // since strs.length is bounded by 100 this takes O(n) where n is the size of strs.
+
+        // create a hashmap that maps string to vecs of strings with capacity to save expansion time
+        let mut keyword_to_vec: HashMap<String,Vec<String>>= HashMap::with_capacity(strs.len());
+        // iterate over &String word in strs
+        for word in strs.iter(){
+            // get a sorted word back
+            let sorted_word = sort_string(word);
+            // if the sorted dosent exist create a new vec, in any case push a clone of the word
+            // i saw later that somone used a conversion to bytes(u8) and sorted them to save time(u8 dosent need cloning)
+            keyword_to_vec.entry(sorted_word).or_insert_with(Vec::new).push(word.clone());
+        }
+        // drain the hashmap and make into a vec of vec of Strings
+        let ret = keyword_to_vec.drain().map(|(_, v)| v).collect();
+        return ret;
+    }
+
+    // takes Theta(n) time and space, can use count sort to ensure this. 
+}
