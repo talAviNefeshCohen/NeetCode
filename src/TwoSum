@@ -1,0 +1,30 @@
+use std::collections::HashMap;
+use std::collections::hash_map::Entry;
+impl Solution {
+    pub fn two_sum(nums: Vec<i32>, target: i32) -> Vec<i32> {
+        let mut nums_seen_to_index: HashMap<i32, usize> = HashMap::with_capacity(nums.len());
+        // create an hashmap from number to index
+        for (idx, &num) in nums.iter().enumerate(){
+            // run on the idx and nums together
+            let complement = target - num;
+            if let Some(&complement_idx) = nums_seen_to_index.get(&complement) {
+                // we borrow the complement and check if its have been seen
+                // if so we inser the index to complement_idx and using & in order for it to be usize and not &usize
+                // because the get return an Option(&V) so the Some unpack the the Option and the & 'unpacks' the &
+                return vec![complement_idx as i32, idx as i32];
+                // then we just return the vector idxs using try_into and unrwap
+            }
+            // now we just insert
+            nums_seen_to_index.insert(num,idx);
+        }
+        return vec![];
+    }
+}
+
+// the algorithm is simple whem realise you can use the target value for the search
+// i better undterstood the '&' and '*' operator here in context of 'unpacking'
+// learnt both using 'try_into' and 'as' in order to cast variables.
+// first usage of enumerate in rust went well.
+// also the if let is getting more compfortable.
+// the runtime is O(n) where n in the size of nums the lower bound is Omega(1)
+// the space complexity is Theta(n) because with_capacity is used here do decrease the map expnading time
