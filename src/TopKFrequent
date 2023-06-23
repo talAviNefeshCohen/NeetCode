@@ -1,0 +1,81 @@
+use std::collections::HashMap;
+
+impl Solution {
+    pub fn top_k_frequent(nums: Vec<i32>, k: i32) -> Vec<i32> {
+        // pre solution thinking
+        // i am familiar with the question and pretty sure the optimal time complexity
+        // is O(nlog(k)) where n is the the length of nums.
+        // also if i remember correctly it is related to the method 'partitio' of 
+        // the quicksort algorithm.
+        // so what partition do if i remember correctly taking an vector and an index 
+        // and partition it in such a way that ensures that all of the elements before it
+        // are smaller then the the element in the index and all of the elements 
+        // after it are bigger
+        // , if not in swaps(in case of ASC sort)
+        // so doin partition on the n-1 index and the n-2 index supposed to fix it
+        // so the plan of attack is first do value to count hashmap then k times 
+        // partition, partition takes O(n) time and we do it k times.
+        // so it should take O(n*k) this is bas since can be equal to 
+        // n and the sorting  solution is easy,
+        // this is also weird since it is different then what i remember
+        // maybe partition should take O(log(k))? 
+        // if so partition is a little different then what i remember
+        // lets rethink that, to be able to do it in nlogk partition should receive k
+        // and make sure the everything under the n-1-k index is smaller then the top k
+        // with no regards to the order of the top k or the lower n-k nums.
+        // lets think how this can be acheived
+        // couldnt think of how to implement partition from scartch so i looked for 
+        // a solution and encountered i was wrong, while parttion is a valid solution 
+        // it dosent use all of the information given, specifically dosent take into 
+        // consditiration the frequency which help create a better, buck sort solution
+        // ill implement the partition when ill encounter 
+        // the select k biggest elements (or the heap solution)
+        // the bucked solution goes like this, create a Vector<Vector<i32>> sized n 
+        // take the counting map and fill it accordingly, iterate in reverse order 
+        // and return the first k elements
+        let mut nums_to_count = HashMap::with_capacity(nums.len());
+        // i learnt that i cant for_each directly on the nums beacuse nums is not mutable
+        nums.iter().for_each(|&num| *nums_to_count.entry(num).or_insert(0) += 1);
+        // not that because i didnt want to spam the heap with empty vecs 
+        // i worked with  option
+        let mut bucket: Vec<Option<Vec<i32>>> = vec![None; nums.len()];
+        // iterates over all of the nums to count
+        for (&num,&count) in nums_to_count.iter(){
+            // if no vector is in the bucket at the count index intialize a new vec, else 
+            // push to the inner vec
+            match &mut bucket[count-1] {
+                Some(inner_vec) => inner_vec.push(num),
+                None => bucket[count-1] = Some(vec![num]),
+            }
+        }
+        let mut kth_most_frequent:Vec<i32> = vec![];
+        // iterates reversed
+        for inner_vec in bucket.iter().rev(){
+            // if the inner vec is empty contniue, else iterate over it
+            match inner_vec{
+                Some(some_inner_vec) => {
+                    for &num in some_inner_vec{
+                        // push the num
+                        kth_most_frequent.push(num);
+                        // if we already have k elements return
+                        if kth_most_frequent.len() == k as usize{
+                            return kth_most_frequent;
+                        }
+                    }
+                },
+                None => (),
+            }
+        }
+        return kth_most_frequent;
+
+    }
+}
+
+// so in the end it takes Theta(N) time and space beacause the num to count creation is Theta(N),
+// the bucket creation is Theta(N) time and space, the returned rev is Theta(k) time
+
+// to conclude i learnt a few things
+// 1. i cant use for_each directly on an unmutable vec
+// 2. remember to try and use all of the inforamtion given in the question.
+// 3. using for on a Option can ne confusing and ill need to remember to unrwap it,
+// 4. bucket trick is useful in many situtations and ill need to remember it.
