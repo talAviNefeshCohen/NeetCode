@@ -1,0 +1,30 @@
+impl Solution {
+    pub fn product_except_self(nums: Vec<i32>) -> Vec<i32> {
+        // presolution thinking,
+        // so i dont think i ever saw this question, the O(n**2) is very easy
+        // doing a for loop inside a for loop skipping the index.
+        // one way is using the "-30 <= nums[i] <= 30" constraint to create a counting 
+        // bucket sized 61, this takes O(n) time. then for each value in nums
+        // get all of the counting bucket value reduce the value of the index one by one
+        // power accordingly and multiply between them.
+        // since there is a constant max of 61 values this takes O(1)
+        // techincally it also takes O(1) memory, ill create this solution 
+        // and if ill figure a better way ill fix it.
+        let mut bucket: [i32; 61] = [0; 61];
+        nums.iter().for_each(|&num| bucket[(num+30) as usize ]+=1 );
+        let mut product_except_self_vec = Vec::with_capacity(nums.len());
+        for &num in nums.iter(){
+            let mut product:i32 = 1;
+            for (bucket_idx,&count) in bucket.iter().enumerate(){
+                let mut pow = count;
+                if bucket_idx == (num as usize +30){
+                    pow -= 1;
+                }
+                product *= num.pow(pow as u32);
+                println!("{}",product);
+            }
+            product_except_self_vec.push(product);
+        }
+        return product_except_self_vec;
+    }
+}

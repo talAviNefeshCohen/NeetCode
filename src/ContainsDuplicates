@@ -1,0 +1,23 @@
+use std::collections::HashSet;
+
+impl Solution {
+    pub fn contains_duplicate(nums: Vec<i32>) -> bool {
+        let mut nums_seen = HashSet::with_capacity(nums.len()); // creates an hashset with at
+        //least this size to avoid unnecessry resizings
+        for num in nums.iter(){ // using iter iterates over &T of the iterable values
+            if nums_seen.contains(num){
+                return true;
+            }
+            nums_seen.insert(*num);
+        }
+        return false;
+    }
+}
+
+// the algorithm is very straight forward using an hashset we make sure that
+// the search time is O(1) and so is the insertion time
+// if a number is already encountered we will find it in the set and thus we will be able to return true,
+// if all of the values are encountrered at max 1 time we will return false.
+// so the runtime is Omega(1) and O(min(n,m+1))
+// where n is the amount length of the iterable nums and m is the number of values in the iterable.
+// the size complexity is Theta(n) because of the with_capacity usage.
