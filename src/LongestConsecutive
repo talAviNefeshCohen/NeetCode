@@ -1,0 +1,52 @@
+use std::collections::HashSet;
+use std::iter::FromIterator;
+
+pub fn longest_consecutive_local( visited_nums: & mut HashSet<i32>,nums_set:& HashSet<i32>,num:i32,step:i32) -> i32{
+    // create a local count and initialize the current num with the step
+    let mut local_count :i32 = 0;
+    let mut cur_num = num+step;
+    // make sure this is an unvisited number and that this number exists in the set
+    while !visited_nums.contains(&cur_num)&&nums_set.contains(&cur_num){
+        // mark the number as visited
+        visited_nums.insert(cur_num);
+        // increase the count
+        local_count += 1;
+        // take the num with the step direction
+        cur_num +=step ;
+    }
+    local_count
+}
+
+impl Solution {
+    pub fn longest_consecutive(nums: Vec<i32>) -> i32 {
+        // pre solution thinking, 
+        // sorting and the like are unhelpful here and it looks like order doesnt play a major role 
+        // if ill convert in to a set ill can easily find my neighbours, also we can have a "visited" set to skip
+        // ok so the plan of attack is clear. convert to an hashset, create a visited hashet also, iterate over the hashset
+        // and have an inner loop that increase a counter adding all visited nums
+
+        // initalize the set using from_iter
+        let nums_set:HashSet<i32> = HashSet::from_iter(nums);
+        // create the visited set with the size of the nums set
+        let mut visited_nums = HashSet::with_capacity(nums_set.len());
+        let mut max_sequence_len:i32 = 0;
+        // iterate over the set values
+        for &num in nums_set.iter(){
+            // skip visited nums
+            if visited_nums.contains(&num){
+                continue;
+            }
+            // mark visited nums
+            visited_nums.insert(num);
+            // init the local count with 1 beacuse this is the first time this num is visited
+            let mut local_count :i32 = 1;
+            // increase teh local count with its neighbour to the left and right
+            local_count += longest_consecutive_local(& mut visited_nums,&nums_set,num,-1);
+            local_count += longest_consecutive_local(& mut visited_nums,&nums_set,num,1);
+            // update the max sequence len if needed
+            max_sequence_len = std::cmp::max(local_count, max_sequence_len);
+
+        }
+        max_sequence_len
+    }
+}
