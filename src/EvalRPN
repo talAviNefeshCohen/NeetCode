@@ -1,0 +1,39 @@
+use std::collections::VecDeque;
+fn operate(op: char, a: i32, b: i32) -> i32 {
+    match op {
+        '+' => a + b,
+        '-' => a - b,
+        '*' => a * b,
+        '/' => a / b,
+        _ => panic!("Unsupported operator: {}", op),
+    }
+}
+
+impl Solution {
+    pub fn eval_rpn(tokens: Vec<String>) -> i32 {
+        // pre solution thinking, add the numbers to a stack
+        // each time an operator is encounterd update current value with the two operator so the first value popped is on the 
+        // left and the second value left is on the right, this is for the first operator then for any additional operator
+        //  use the fitting *= /= etc.
+
+        // create the stack
+        let mut stack : VecDeque<i32> = VecDeque::with_capacity(tokens.len());
+        
+        //iterate over each token
+        for token in tokens.iter(){
+            // if the token can be parsed to an i32 add it to the stack
+            if let Ok(num) = token.parse::<i32>() {
+                stack.push_back(num);
+            // else take the last to numbers on the stack and do the opreation between them
+            //  then push the result to the stack
+            } else {
+
+                let a = stack.pop_back().unwrap();
+                let b = stack.pop_back().unwrap();
+                stack.push_back(operate(token.chars().next().unwrap(),b,a));
+            }
+        }
+        // now on the top of the stack(assuming valid input) we have our result so we pop and unwrap it.
+        return stack.pop_back().unwrap();
+    }
+}
