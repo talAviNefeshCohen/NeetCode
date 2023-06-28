@@ -1,0 +1,32 @@
+impl Solution {
+    // presolution thinking,
+    // since position is already sorted and in sync with speed i can calculate how much time it will take for it
+    // to get to the target, if a car have smaller position arrived faster/at the same time they are part of the same fleet
+    // this takes care of the case car slows down a fast car behind it, its more of a case the code will explain
+    pub fn car_fleet(target: i32, position: Vec<i32>, speed: Vec<i32>) -> i32 {
+        // takes care for the null case.
+        if position.len() == 0{
+            return 0;
+        }
+        // merge the speed and the position vec to a cars vec
+        let mut cars: Vec<_> = position.into_iter().zip(speed).collect();
+        // sort them together
+        cars.sort_unstable_by_key(|&(pos, _)| pos);
+        // start the fleet
+        let mut car_fleet_count = 1;
+        // calculate the time it takes to get to the end, was a bit lazy to create a function for it,
+        let mut cur_top_time = ((target - cars.last().unwrap().0) as f64)/(cars.last().unwrap().1 as f64);
+        for &car in cars.iter().rev(){
+            //calculate current time
+            let cur_time = ((target - car.0) as f64)/(car.1 as f64);
+            // if the current time is smaller than the current top time we can be sure that
+            // there is a new fleet
+            if cur_top_time < cur_time{
+                // switch the time add a fleet
+                cur_top_time = cur_time;
+                car_fleet_count += 1;
+            }
+        }
+        return car_fleet_count;
+    }
+}
