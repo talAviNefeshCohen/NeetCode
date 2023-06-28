@@ -1,0 +1,36 @@
+impl Solution {
+    // pre solution thinking, so it looks very recursive in nature, if n = =0 return an empty String if n = 1 return "()"
+    // if n = 2 return (()),()() if n =3 return ((())),(()()),()(()),()()(),(())()
+
+    // not my solution, couldnt solve it in normal time
+    pub fn generate_parenthesis(n: i32) -> Vec<String> {
+        let mut stack = vec![(0, 0, String::new())];  // stack of (open, close, string)
+        let mut result = vec![]; 
+
+        // iterate until the stack is empty
+        while let Some((open, close, current)) = stack.pop() {
+            // if there is a valid number of parenthesis push it to the result, note that we know that they are both
+            // n in this case because of the if's statments with '< n'
+            if open + close == 2 * n as usize {
+                result.push(current);
+            } else {
+                // now we know for sure that that the string in here is not yet valid and we need to 
+                // add all possible options of opening and closing, the thing is it works with the while very intricatly
+
+                if open < n as usize {
+                    stack.push((open + 1, close, format!("{}(", current)));
+                }
+                if close < open {
+                    stack.push((open, close + 1, format!("{})", current)));
+                }
+            }
+        }
+
+        result
+    }
+}
+// this solution is a iterative approach to backtracking, in the backtracking version it might be more inutive to think about it
+// but the idea stays the same, add open if open is smaller then n, add close if close is smaller than open and 
+// add a value to the list if n==open==closed.
+
+// for next time i should graph these type of questions so ill have a better shout solving it myself.

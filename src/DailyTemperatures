@@ -1,0 +1,42 @@
+use std::collections::VecDeque;
+impl Solution {
+    pub fn daily_temperatures(temperatures: Vec<i32>) -> Vec<i32> {
+        //presolution thinking
+        // so first i try to think about iterating in reverse order might help.
+        // it looks like maybe the minstack might come in handy here, instead of a min stack ill create a 
+        // max stack and then reverse iterate on the list and count the pops comapring to the max,
+        // ok nvm this is problemtic because it only takes into considiration one temperature
+        // but in case like this "[73,74,75,71,69,72,76,73]" 75 should result in 4 with regard to 76 but it will already be popped
+        // more thinking, thought about hashing but temperature can occur more than once
+        // so lets think about the simple solution, start from the left and count for each of them, this takes Theat(n**2)
+        // it dosent use any information precalculated
+        // maybe saving the change in a stack is useful. lets see [73,74,75,71,69,72,76,73] we get change of [1,1,-4,-2,3,4,-3]
+        // no it dosent fix it. maybe if ill save the indexes in a queue while iterating it can help
+        // so iterate from first to last, if the stack is not empty peek at its value, if the value at the index of the peeked
+        // value is smaller then the current value push to the result cur_idx - peeked_idx, and pop and the value at stack.
+        // in any case add the cur_index to the stack.
+
+        let mut hot_temps_idxs_stack = VecDeque::<usize>::with_capacity(temperatures.len()); // create a stack to store the temperatues idxs that are waiting for an higher temp, not
+        let mut result = vec![0; temperatures.len()]; // initiate the result with all zeros
+        // iterate over each value and index
+        for (cur_idx, &value) in temperatures.iter().enumerate(){
+            // loop over the peeked valuse of the stack, which is the most current idx of a day with tempreture that is
+            // waiting to be exceeded, note that it uses let Some so it takes care of empty stack.
+            while let Some(&last_idx) = hot_temps_idxs_stack.back() {
+                // if the peeked_idx is smaller than the current value
+                if temperatures[last_idx] < value {
+                    hot_temps_idxs_stack.pop_back(); // Remove the index from the stack
+                    result[last_idx] = (cur_idx - last_idx) as i32; // Update the result at the index found
+                } else { // we break the loop
+                    break;
+                }
+            }
+            // at the end we just push the current idx so it will wait for an hotter day
+            hot_temps_idxs_stack.push_back(cur_idx);
+        }
+        return result;
+        
+    }
+}
+
+// takes Theta(n) time and space. 

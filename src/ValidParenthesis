@@ -1,0 +1,29 @@
+use std::collections::{HashMap,HashSet};
+impl Solution {
+    pub fn is_valid(s: String) -> bool {
+        // created mapping for conience
+        let parentheses_map: HashMap<char, char> = [(')', '('), ('}', '{'), (']', '[')].iter().cloned().collect();
+        let open_parentheses: HashSet<char> = ['(','{','['].iter().cloned().collect();
+        // created a vec as a stack with a specific size so no resizing is needed
+        let mut stack = Vec::with_capacity((s.len()/2)+1);
+        // honestly forgot abour chars but the compile time error reminded me
+        for c in s.chars(){
+            // if its an open paretheses add it to the stack
+            if open_parentheses.contains(&c){
+                stack.push(c.clone());
+            }
+            // now we know this is a closing parentheses so we if the stack is empty it means that we have a closing parethessis
+            // without closing one
+            else if stack.is_empty(){
+                return false;
+            } else {
+                // now we make sure that the topmost value on the stack is the open parethesis fitting our value opening parethesis, if it is not we need to return false, for casee like ({)}
+                if stack.pop().unwrap() != *parentheses_map.get(&c).unwrap(){
+                    return false;
+                }
+            }
+        }
+        // now if the stack is empty it means that the all opening parenthesis were close, else it means that some were not so we retur false.
+        return stack.is_empty()
+    }
+}
